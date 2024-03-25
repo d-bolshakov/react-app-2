@@ -3,6 +3,8 @@ import { TaskListModule } from './task-list/task-list.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TaskList } from './task-list/entities/task-list.entity';
+import { TaskModule } from './task/task.module';
+import { Task } from './task/entities/task.entity';
 
 @Module({
   imports: [
@@ -15,10 +17,11 @@ import { TaskList } from './task-list/entities/task-list.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: 'tododb',
-      entities: [TaskList],
+      entities: [TaskList, Task],
       synchronize: true,
       logging: true,
     }),
+    TaskModule,
   ],
 })
 export class AppModule {}
