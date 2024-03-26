@@ -18,6 +18,7 @@ export class TaskPriorityChangedHandler {
       task: { id: event.taskId },
       payload: { from: event.from, to: event.to },
       type: TaskEventTypes.TASK_PRIORITY_CHANGED,
+      timestamp: event.timestamp,
     });
     this.taskActivityRepository.insert(activity);
   }

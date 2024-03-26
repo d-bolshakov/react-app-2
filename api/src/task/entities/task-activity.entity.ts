@@ -26,4 +26,7 @@ export class TaskActivity {
 
   @Column({ type: 'varchar', nullable: false })
   type: TaskEventTypes;
+
+  @Column({ type: 'timestamptz', nullable: false })
+  timestamp: Date;
 }

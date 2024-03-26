@@ -7,4 +7,5 @@ export class TaskRenamedEvent {
   taskId: number;
   from: string;
   to: string;
+  timestamp: Date = new Date();
 }

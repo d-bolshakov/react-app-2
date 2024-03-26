@@ -9,4 +9,5 @@ export class TaskPriorityChangedEvent {
   taskId: number;
   from: TaskPriority;
   to: TaskPriority;
+  timestamp: Date = new Date();
 }

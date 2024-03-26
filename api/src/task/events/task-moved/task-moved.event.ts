@@ -7,4 +7,5 @@ export class TaskMovedEvent {
   taskId: number;
   fromListId: number;
   toListId: number;
+  timestamp: Date = new Date();
 }

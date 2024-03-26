@@ -18,6 +18,7 @@ export class TaskRenamedHandler {
       task: { id: event.taskId },
       payload: { from: event.from, to: event.to },
       type: TaskEventTypes.TASK_RENAMED,
+      timestamp: event.timestamp,
     });
     this.taskActivityRepository.insert(activity);
   }

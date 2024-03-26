@@ -18,6 +18,7 @@ export class TaskMovedHandler {
       task: { id: event.taskId },
       payload: { fromListId: event.fromListId, toListId: event.toListId },
       type: TaskEventTypes.TASK_MOVED,
+      timestamp: event.timestamp,
     });
     this.taskActivityRepository.insert(activity);
   }

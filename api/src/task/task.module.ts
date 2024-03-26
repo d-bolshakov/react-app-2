@@ -9,12 +9,14 @@ import { TaskActivity } from './entities/task-activity.entity';
 import { TaskRenamedHandler } from './events/task-renamed/task-renamed.handler';
 import { TaskPriorityChangedHandler } from './events/task-priority-changed/task-priority-changed.handler';
 import { TaskMovedHandler } from './events/task-moved/task-moved.handler';
+import { TaskActivityService } from './services/task-activity.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Task, TaskActivity]), TaskListModule],
   controllers: [TaskController],
   providers: [
     TaskService,
+    TaskActivityService,
     TaskAddedHandler,
     TaskRenamedHandler,
     TaskPriorityChangedHandler,

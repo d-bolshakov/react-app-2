@@ -5,4 +5,5 @@ export class TaskAddedEvent {
   }
   taskId: number;
   listId: number;
+  timestamp: Date = new Date();
 }

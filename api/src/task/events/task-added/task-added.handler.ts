@@ -18,6 +18,7 @@ export class TaskAddedHandler {
       task: { id: event.taskId },
       payload: { listId: event.listId },
       type: TaskEventTypes.TASK_ADDED,
+      timestamp: event.timestamp,
     });
     this.taskActivityRepository.save(activity);
   }
