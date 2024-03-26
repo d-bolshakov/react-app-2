@@ -2,7 +2,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
@@ -26,7 +26,7 @@ export class Task {
   @Column({ type: 'enum', enum: TaskPriority, nullable: false })
   priority: TaskPriority;
 
-  @OneToOne(() => TaskList, { cascade: true, nullable: false })
+  @ManyToOne(() => TaskList, { cascade: true, nullable: false })
   @JoinColumn()
   list: TaskList;
 

@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TaskList } from './task-list/entities/task-list.entity';
 import { TaskModule } from './task/task.module';
 import { Task } from './task/entities/task.entity';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { TaskActivity } from './task/entities/task-activity.entity';
 
 @Module({
   imports: [
@@ -17,10 +19,11 @@ import { Task } from './task/entities/task.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: 'tododb',
-      entities: [TaskList, Task],
+      entities: [TaskList, Task, TaskActivity],
       synchronize: true,
       logging: true,
     }),
+    EventEmitterModule.forRoot(),
     TaskModule,
   ],
 })
