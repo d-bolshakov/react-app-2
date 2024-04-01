@@ -4,6 +4,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
   RelationId,
 } from 'typeorm';
 import { Task } from './task.entity';
@@ -14,9 +15,12 @@ export class TaskActivity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Task, { cascade: true, nullable: false })
+  @ManyToOne(() => Task, (task: Task) => task.activity, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
   @JoinColumn()
-  task: Task;
+  task: Relation<Task>;
 
   @RelationId((activity: TaskActivity) => activity.task)
   taskId: number;

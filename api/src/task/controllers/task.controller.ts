@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { TaskService } from '../services/task.service';
 import { CreateTaskDto } from '../dto/create-task.dto';
 import { UpdateTaskDto } from '../dto/update-task.dto';
 import { TaskActivityService } from '../services/task-activity.service';
+import { GetTasksQuery } from '../query/get-tasks.query';
 
 @Controller('tasks')
 export class TaskController {
@@ -25,8 +27,8 @@ export class TaskController {
   }
 
   @Get()
-  findAll() {
-    return this.taskService.findAll();
+  findAll(@Query() getTasksQuery: GetTasksQuery) {
+    return this.taskService.findAll(getTasksQuery);
   }
 
   @Get('/activity')

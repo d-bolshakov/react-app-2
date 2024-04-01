@@ -3,11 +3,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
+  Relation,
   RelationId,
 } from 'typeorm';
 import { TaskPriority } from './task-priority.enum';
 import { TaskList } from '../../task-list/entities/task-list.entity';
+import { TaskActivity } from './task-activity.entity';
 
 @Entity()
 export class Task {
@@ -26,10 +29,16 @@ export class Task {
   @Column({ type: 'enum', enum: TaskPriority, nullable: false })
   priority: TaskPriority;
 
-  @ManyToOne(() => TaskList, { cascade: true, nullable: false })
+  @ManyToOne(() => TaskList, (list: TaskList) => list.tasks, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
   @JoinColumn()
-  list: TaskList;
+  list: Relation<TaskList>;
 
   @RelationId((task: Task) => task.list)
   listId: number;
+
+  @OneToMany(() => TaskActivity, (activity: TaskActivity) => activity.task)
+  activity: Relation<TaskActivity[]>;
 }

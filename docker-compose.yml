@@ -11,7 +11,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=root
-      - POSTGRES_DATABASE=tododb
+      - POSTGRES_DB=tododb
     volumes:
       - ./volumes/postgres-dev:/var/lib/postgresql/data
     healthcheck:
@@ -19,3 +19,26 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  api:
+    container_name: to-do-api
+    build: 
+      context: ./api
+      target: prod
+    ports:
+      - 3000:3000
+    restart: always
+    env_file:
+      - ./api/.env
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    container_name: to-do-frontend
+    build: 
+      context: ./client
+      target: prod
+    ports:
+      - 5000:5000
+    restart: always

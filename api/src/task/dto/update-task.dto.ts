@@ -35,6 +35,7 @@ export class UpdateTaskDto extends PartialType(CreateTaskDto) {
   @IsEnum(TaskPriority, {
     message: `priority should be either ${Object.values(TaskPriority).join(', ')}`,
   })
+  @Type(() => Number)
   priority?: TaskPriority;
 
   @IsOptional()

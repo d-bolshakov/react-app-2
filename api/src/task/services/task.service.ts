@@ -3,7 +3,7 @@ import { CreateTaskDto } from '../dto/create-task.dto';
 import { UpdateTaskDto } from '../dto/update-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from '../entities/task.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsOrder, FindOptionsWhere, Repository } from 'typeorm';
 import { TaskListService } from '../../task-list/services/task-list.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { TaskAddedEvent } from '../events/task-added/task-added.event';
@@ -11,6 +11,7 @@ import { TaskRenamedEvent } from '../events/task-renamed/task-renamed.event';
 import { TaskPriorityChangedEvent } from '../events/task-priority-changed/task-priority-changed.event';
 import { TaskMovedEvent } from '../events/task-moved/task-moved.event';
 import { TaskEventTypes } from '../events/task-events-types.enum';
+import { GetTasksQuery } from '../query/get-tasks.query';
 
 @Injectable()
 export class TaskService {
@@ -35,8 +36,12 @@ export class TaskService {
     return task;
   }
 
-  async findAll() {
-    return this.taskRepository.find();
+  async findAll(query: GetTasksQuery) {
+    const conditions: FindOptionsWhere<Task> = {};
+    const order: FindOptionsOrder<Task> = {};
+    if (query.sortBy) order[query.sortBy] = query.order || 'ASC';
+    if (query.listId) conditions.list = { id: query.listId };
+    return this.taskRepository.find({ where: conditions, order });
   }
 
   async findOne(id: number) {
@@ -50,6 +55,7 @@ export class TaskService {
   }
 
   async update(id: number, updateTaskDto: UpdateTaskDto) {
+    console.log('update dto', updateTaskDto);
     const task = await this.findOne(id);
     const { name, description, dueDate, priority, listId } = updateTaskDto;
     let hasChanges = false;
