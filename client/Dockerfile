@@ -19,10 +19,6 @@ WORKDIR /app
 
 COPY --from=build /app/dist ./dist
 
-COPY --from=build /app/package*.json .
-
-RUN npm ci --only=production
-
 RUN npm install serve -g
 
 EXPOSE 5000
