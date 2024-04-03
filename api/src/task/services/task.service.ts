@@ -41,6 +41,7 @@ export class TaskService {
     const order: FindOptionsOrder<Task> = {};
     if (query.sortBy) order[query.sortBy] = query.order || 'ASC';
     if (query.listId) conditions.list = { id: query.listId };
+    if (query.boardId) conditions.list = { board: { id: query.boardId } };
     return this.taskRepository.find({ where: conditions, order });
   }
 

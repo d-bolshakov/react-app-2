@@ -8,12 +8,17 @@ export class GetTasksQuery {
   listId?: number;
 
   @IsOptional()
+  @IsNumber({}, { message: 'boardId should be a number' })
+  @Type(() => Number)
+  boardId?: number;
+
+  @IsOptional()
   @IsString({ message: 'sortBy should be a string' })
-  sortBy: string;
+  sortBy?: string;
 
   @IsOptional()
   @IsIn(['ASC', 'DESC'], {
     message: "order should be either a 'ASC' or 'DESC'",
   })
-  order: string;
+  order?: string;
 }

@@ -7,6 +7,8 @@ import { TaskModule } from './task/task.module';
 import { Task } from './task/entities/task.entity';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TaskActivity } from './task/entities/task-activity.entity';
+import { BoardModule } from './board/board.module';
+import { Board } from './board/entities/board.entity';
 
 @Module({
   imports: [
@@ -19,12 +21,13 @@ import { TaskActivity } from './task/entities/task-activity.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: 'tododb',
-      entities: [TaskList, Task, TaskActivity],
+      entities: [TaskList, Task, TaskActivity, Board],
       synchronize: true,
       logging: true,
     }),
     EventEmitterModule.forRoot(),
     TaskModule,
+    BoardModule,
   ],
 })
 export class AppModule {}

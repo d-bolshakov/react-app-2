@@ -1,15 +1,18 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreateTaskListDto } from '../dto/create-task-list.dto';
 import { UpdateTaskListDto } from '../dto/update-task-list.dto';
 import { TaskList } from '../entities/task-list.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
+import { BoardService } from '../../board/services/board.service';
+import { GetTaskListsQuery } from '../query/get-task-lists.query';
 
 @Injectable()
 export class TaskListService {
   constructor(
     @InjectRepository(TaskList)
     private taskListRepository: Repository<TaskList>,
+    @Inject(BoardService) private boardService: BoardService,
   ) {}
   async create(createTaskListDto: CreateTaskListDto) {
     const existsWithName = await this.taskListRepository.exists({
@@ -20,13 +23,17 @@ export class TaskListService {
         `Task list with name ${createTaskListDto.name} already exists`,
         HttpStatus.BAD_REQUEST,
       );
+    const board = await this.boardService.findOne(createTaskListDto.boardId);
     const taskList = new TaskList();
     taskList.name = createTaskListDto.name;
+    taskList.board = board;
     return this.taskListRepository.save(taskList);
   }
 
-  async findAll() {
-    return this.taskListRepository.find();
+  async findAll(query: GetTaskListsQuery) {
+    const conditions: FindOptionsWhere<TaskList> = {};
+    if (query.boardId) conditions.board = { id: query.boardId };
+    return this.taskListRepository.find({ where: conditions });
   }
 
   async findOne(id: number) {

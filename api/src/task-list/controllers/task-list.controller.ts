@@ -6,10 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { TaskListService } from '../services/task-list.service';
 import { CreateTaskListDto } from '../dto/create-task-list.dto';
 import { UpdateTaskListDto } from '../dto/update-task-list.dto';
+import { GetTaskListsQuery } from '../query/get-task-lists.query';
 
 @Controller('task-lists')
 export class TaskListController {
@@ -21,8 +23,8 @@ export class TaskListController {
   }
 
   @Get()
-  findAll() {
-    return this.taskListService.findAll();
+  findAll(@Query() query: GetTaskListsQuery) {
+    return this.taskListService.findAll(query);
   }
 
   @Get(':id')
