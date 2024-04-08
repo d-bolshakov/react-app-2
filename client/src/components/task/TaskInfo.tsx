@@ -1,5 +1,8 @@
-import { useState } from "react";
-import { useGetTaskListsQuery, useUpdateTaskMutation } from "../../api/api";
+import { useContext, useState } from "react";
+import {
+  useGetTaskListsByBoardIdQuery,
+  useUpdateTaskMutation,
+} from "../../api/api";
 import { Task } from "../../data/Task";
 import { TaskList } from "../../data/TaskList";
 import { formatDateToWeekdayDateMonth } from "../../utils/DateFormat";
@@ -8,15 +11,23 @@ import { TaskPriority } from "../../data/TaskPriority";
 import { updateTaskSchema, validator } from "../../utils/Validation";
 import { toast } from "react-toastify";
 import { Button, ButtonTypes } from "../ui/Button";
+import { BoardContext } from "../../context/board/BoardContext";
 
 export const TaskInfo = ({ task }: { task: Task }) => {
   const [editMode, setEditMode] = useState(false);
-  const { data: lists } = useGetTaskListsQuery(null);
+  const { boardId } = useContext(BoardContext);
+  const { data: lists, isLoading } = useGetTaskListsByBoardIdQuery(boardId!, {
+    skip: !boardId,
+  });
   const [updateTask] = useUpdateTaskMutation();
-  const listOptions = lists!.map((list: TaskList) => ({
-    value: list.id,
-    name: list.name,
-  }));
+  console.log("lists", lists);
+  const listOptions =
+    !isLoading && lists
+      ? lists.map((list: TaskList) => ({
+          value: list.id,
+          name: list.name,
+        }))
+      : [];
   const priorityOptions = Object.entries(PriorityTitleTemplates).map(
     ([value, name]) => ({ value: Number(value), name })
   );
@@ -206,13 +217,14 @@ function EditableSelect({
     <>
       {editMode ? (
         <select className={`${className}`} value={value} onChange={onChange}>
-          {options.map((option) => (
-            <option value={option.value}>{option.name}</option>
-          ))}
+          {options &&
+            options?.map((option) => (
+              <option value={option.value}>{option.name}</option>
+            ))}
         </select>
       ) : (
         <span className={`px-1 ${className}`}>
-          {options.find((item) => item.value === value)!.name}
+          {options.find((item) => item.value === value)?.name}
         </span>
       )}
     </>

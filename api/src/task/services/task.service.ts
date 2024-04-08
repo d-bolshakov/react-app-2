@@ -86,12 +86,18 @@ export class TaskService {
       hasChanges = true;
     }
     if (listId && listId !== task.listId) {
-      const taskList = await this.taskListService.findOne(listId);
+      const oldTaskList = await this.taskListService.findOne(task.listId);
+      const newTaskList = await this.taskListService.findOne(listId);
+      if (oldTaskList.boardId !== newTaskList.boardId)
+        throw new HttpException(
+          `Task can be moved only to the list within the same board`,
+          HttpStatus.BAD_REQUEST,
+        );
       events.push([
         TaskEventTypes.TASK_MOVED,
         new TaskMovedEvent(task.id, task.listId, listId),
       ]);
-      task.list = taskList;
+      task.list = newTaskList;
       hasChanges = true;
     }
     if (hasChanges) {

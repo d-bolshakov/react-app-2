@@ -7,13 +7,10 @@ import { ModalContext } from "../../context/modal/ModalContext";
 import { BoardsListContext } from "../../context/board-list/BoardsListContext";
 import { MobileContext } from "../../context/mobile/MobileContext";
 import { Sidebar } from "../ui/Sidebar";
+import { BoardContext } from "../../context/board/BoardContext";
 
-type Props = {
-  selectedId: number | null;
-  onSelected: (id: number) => void;
-};
-
-export const BoardsList = ({ selectedId, onSelected }: Props) => {
+export const BoardsList = () => {
+  const { boardId, setBoardId } = useContext(BoardContext);
   const { isMobile } = useContext(MobileContext);
   const { openModal, closeModal } = useContext(ModalContext);
   const { data: boards } = useGetBoardsQuery(null);
@@ -26,8 +23,8 @@ export const BoardsList = ({ selectedId, onSelected }: Props) => {
             <Menu className="w-full">
               {boards?.map((board) => (
                 <Menu.Item
-                  onClick={() => onSelected(board.id)}
-                  selected={board.id === selectedId}
+                  onClick={() => setBoardId(board.id)}
+                  selected={board.id === boardId}
                 >
                   {board.name}
                 </Menu.Item>
@@ -54,8 +51,8 @@ export const BoardsList = ({ selectedId, onSelected }: Props) => {
             <Menu className="w-full">
               {boards?.map((board) => (
                 <Menu.Item
-                  onClick={() => onSelected(board.id)}
-                  selected={board.id === selectedId}
+                  onClick={() => setBoardId(board.id)}
+                  selected={board.id === boardId}
                 >
                   {board.name}
                 </Menu.Item>

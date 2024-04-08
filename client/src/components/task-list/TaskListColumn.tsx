@@ -1,8 +1,7 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useContext, useState } from "react";
 import { TaskList } from "../../data/TaskList";
 import { TaskCard } from "../task/TaskCard";
 import { Task } from "../../data/Task";
-import { Modal } from "../ui/Modal";
 import { AddTaskCardForm } from "../task/AddTaskCardForm";
 import {
   useDeleteTaskListMutation,
@@ -12,18 +11,20 @@ import { EditTaskListForm } from "./EditTaskListForm";
 import { Dropdown } from "../ui/Dropdown";
 import { Menu } from "../ui/Menu";
 import { Button, ButtonTypes } from "../ui/Button";
+import { ModalContext } from "../../context/modal/ModalContext";
 
 export const TaskListColumn = ({ list }: { list: TaskList }) => {
-  const [modalAddCard, setModalAddCard] = useState(false);
-  const [modalEditList, setModalEditList] = useState(false);
+  const { openModal, closeModal } = useContext(ModalContext);
   const [deleteTaskList] = useDeleteTaskListMutation();
   const { data: tasks, isLoading } = useGetTasksByListIdQuery({
     listId: list.id,
     params: { sortBy: "priority", order: "ASC" },
   });
-  const onClickAddCard = () => setModalAddCard(true);
+  const onClickAddCard = () =>
+    openModal(<AddTaskCardForm onSubmitted={closeModal} listId={list.id} />);
   const onClickDeleteTaskList = () => deleteTaskList(list.id);
-  const onClickEditList = () => setModalEditList(true);
+  const onClickEditList = () =>
+    openModal(<EditTaskListForm onSubmitted={closeModal} list={list} />);
   const headerActions = [
     {
       title: (
@@ -51,40 +52,25 @@ export const TaskListColumn = ({ list }: { list: TaskList }) => {
     },
   ];
   return (
-    <>
-      <div>
-        <Header
-          listName={list.name}
-          tasksCount={tasks?.length || 0}
-          actions={headerActions}
-        />
-        <Button
-          type={ButtonTypes.DASHED}
-          onClick={onClickAddCard}
-          className="w-full py-3 mt-2"
-        >
-          <i className="fa-solid fa-plus"></i> Add new card
-        </Button>
-        {!isLoading && tasks?.length
-          ? tasks.map((task: Task) => <TaskCard task={task} key={task.id} />)
-          : null}
-      </div>
-      <Modal openModal={modalAddCard} closeModal={() => setModalAddCard(false)}>
-        <AddTaskCardForm
-          onSubmitted={() => setModalAddCard(false)}
-          listId={list.id}
-        />
-      </Modal>
-      <Modal
-        openModal={modalEditList}
-        closeModal={() => setModalEditList(false)}
+    <div>
+      <Header
+        listName={list.name}
+        tasksCount={tasks?.length || 0}
+        actions={headerActions}
+      />
+      <Button
+        type={ButtonTypes.DASHED}
+        onClick={onClickAddCard}
+        className="w-full py-3 mt-2"
       >
-        <EditTaskListForm
-          onSubmitted={() => setModalEditList(false)}
-          list={list}
-        />
-      </Modal>
-    </>
+        <i className="fa-solid fa-plus"></i> Add new card
+      </Button>
+      {!isLoading && tasks?.length
+        ? tasks.map((task: Task) => (
+            <TaskCard task={task} key={task.id} boardId={list.boardId} />
+          ))
+        : null}
+    </div>
   );
 };
 

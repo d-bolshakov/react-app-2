@@ -1,23 +1,27 @@
 import { Task } from "../../data/Task";
 import {
   useDeleteTaskMutation,
-  useGetTaskListsQuery,
+  useGetTaskListsByBoardIdQuery,
   useMoveTaskToListMutation,
 } from "../../api/api";
 import { TaskList } from "../../data/TaskList";
 import { Dropdown } from "../ui/Dropdown";
-import { Modal } from "../ui/Modal";
-import { ChangeEvent, ReactNode, useState } from "react";
+import { ChangeEvent, ReactNode, useContext, useState } from "react";
 import { PriorityTitleTemplates } from "../../templates/PriorityTemplates";
 import { formatDateToWeekdayDateMonth } from "../../utils/DateFormat";
 import { TaskDetailsCard } from "./TaskDetailsCard";
 import { Select } from "../ui/Select";
 import { TaskPriority } from "../../data/TaskPriority";
 import { Menu } from "../ui/Menu";
+import { ModalContext } from "../../context/modal/ModalContext";
+import { BoardContext } from "../../context/board/BoardContext";
 
 export const TaskCard = ({ task }: { task: Task }) => {
-  const [modal, setModal] = useState(false);
-  const { currentData } = useGetTaskListsQuery(null);
+  const { openModal } = useContext(ModalContext);
+  const { boardId } = useContext(BoardContext);
+  const { currentData } = useGetTaskListsByBoardIdQuery(boardId!, {
+    skip: !boardId,
+  });
   const listOptions = currentData
     ?.filter((list) => list.id !== task.listId)
     .map((list: TaskList) => (
@@ -36,7 +40,12 @@ export const TaskCard = ({ task }: { task: Task }) => {
     });
   };
   const onClickDeleteTask = () => deleteTask(task.id);
-  const onClickEditTask = () => setModal(true);
+  const onClickEditTask = () =>
+    openModal(
+      <BoardContext.Provider value={{ boardId }}>
+        <TaskDetailsCard task={task} />
+      </BoardContext.Provider>
+    );
   const headerActions = [
     {
       title: (
@@ -70,9 +79,6 @@ export const TaskCard = ({ task }: { task: Task }) => {
         </option>
         {listOptions}
       </Select>
-      <Modal openModal={modal} closeModal={() => setModal(false)}>
-        <TaskDetailsCard task={task} />
-      </Modal>
     </div>
   );
 };

@@ -8,13 +8,14 @@ import { EditBoardForm } from "./EditBoardForm";
 import { useDeleteBoardMutation, useGetBoardByIdQuery } from "../../api/api";
 import { ButtonGroup } from "../ui/ButtonGroup";
 import { CreateTaskListForm } from "../task-list/CreateTaskListForm";
+import { BoardContext } from "../../context/board/BoardContext";
 
 type Props = {
-  boardId: number | null;
   onBoardDeleted: () => void;
 };
 
-export const BoardHeader = ({ boardId, onBoardDeleted }: Props) => {
+export const BoardHeader = ({ onBoardDeleted }: Props) => {
+  const { boardId } = useContext(BoardContext);
   const { data: board } = useGetBoardByIdQuery(boardId!, {
     skip: !boardId,
   });
@@ -74,48 +75,6 @@ export const BoardHeader = ({ boardId, onBoardDeleted }: Props) => {
           </ButtonGroup.Item>
         </ButtonGroup>
       ) : null}
-      {/* //   <Header.Controls
-      //     buttons={[
-      //       {
-      //         type: ButtonTypes.SECONDARY,
-      //         onClick: () =>
-      //           openModal(
-      //             <EditBoardForm board={board} onSubmitted={closeModal} />
-      //           ),
-      //         text: (
-      //           <>
-      //             <i className="fa-regular fa-pen-to-square"></i> Edit
-      //           </>
-      //         ),
-      //       },
-      //       {
-      //         type: ButtonTypes.PRIMARY,
-      //         onClick: () => {
-      //           onBoardDeleted();
-      //           deleteBoard(board.id);
-      //         },
-      //         text: "Delete",
-      //         className: "bg-red-500 border-red-500 hover:text-red-500",
-      //       },
-      //       {
-      //         type: ButtonTypes.SECONDARY,
-      //         onClick: openHistory,
-      //         text: "History",
-      //       },
-      //       {
-      //         type: ButtonTypes.PRIMARY,
-      //         onClick: () =>
-      //           openModal(
-      //             <CreateTaskListForm
-      //               boardId={board?.id}
-      //               onSubmitted={() => closeModal()}
-      //             />
-      //           ),
-      //         text: "Create new list",
-      //       },
-      //     ]}
-      //   />
-      // ) : null} */}
     </Header>
   );
 };
