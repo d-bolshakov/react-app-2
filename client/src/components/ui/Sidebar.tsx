@@ -1,28 +1,41 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { Header } from "./Header";
+import { Button, ButtonTypes } from "./Button";
 
 type Props = {
   visible: boolean;
-  title?: string;
-  onClickOutside: () => void;
+  onClose: () => void;
   children: React.ReactNode;
+  title?: string;
 };
 
-export const Sidebar = ({
-  children,
-  visible,
-  onClickOutside,
-  title,
-}: Props) => {
-  if (visible) document.body.style.overflow = "clip";
+export const Sidebar = ({ children, visible, onClose, title }: Props) => {
+  useEffect(() => {
+    if (visible) document.body.style.overflow = "clip";
+    else document.body.style.overflow = "auto";
+  }, [visible]);
+  console.log("sidebar visible", visible);
   return (
     <>
       {visible &&
         createPortal(
-          <Overlay visible={visible} onClickOutside={onClickOutside}>
+          <Overlay visible={visible} onClose={onClose}>
             <MainContainer visible={visible}>
-              <Header onClickOutside={onClickOutside} title={title} />
-              <div className="p-2">{children}</div>
+              <Header>
+                <Header.Title>{title}</Header.Title>
+                <Button
+                  type={ButtonTypes.SECONDARY}
+                  className="!border-none !shadow-none ml-auto mr-0"
+                  onClick={() => {
+                    onClose();
+                    document.body.style.overflow = "unset";
+                  }}
+                >
+                  <i className="fa-solid fa-x"></i>
+                </Button>
+              </Header>
+              {children}
             </MainContainer>
           </Overlay>,
           document.getElementById("overlay")!
@@ -33,20 +46,20 @@ export const Sidebar = ({
 
 type OverlayProps = {
   visible: boolean;
-  onClickOutside: (e?: React.MouseEvent<HTMLDivElement>) => void;
+  onClose: (e?: React.MouseEvent<HTMLDivElement>) => void;
   children: ReactNode;
 };
 
-function Overlay({ visible, onClickOutside, children }: OverlayProps) {
+function Overlay({ visible, onClose, children }: OverlayProps) {
   return (
     <div
       onClick={() => {
-        onClickOutside();
+        onClose();
         document.body.style.overflow = "unset";
       }}
-      className={`absolute ${
+      className={`fixed ${
         visible ? "block" : "hidden"
-      } left-0 top-0 w-full h-full backdrop-blur-sm z-10`}
+      } left-0 top-0 w-full h-full backdrop-blur-sm`}
     >
       {children}
     </div>
@@ -62,35 +75,11 @@ function MainContainer({ visible, children }: MainContainerProps) {
   return (
     <div
       onClick={(event) => event.stopPropagation()}
-      className={`fixed md:w-fit sm:w-full h-full right-0 ${
+      className={`fixed md:w-fit max-sm:w-full h-full right-0 ${
         visible ? "block" : "hidden"
-      } bg-gray-300 shadow shadow-gray-500 z-20 overflow-auto`}
+      } bg-gray-200 shadow shadow-gray-500 overflow-auto`}
     >
       {children}
-    </div>
-  );
-}
-
-type HeaderProps = {
-  title?: string;
-  onClickOutside: (e?: React.MouseEvent<HTMLButtonElement>) => void;
-};
-
-function Header({ onClickOutside, title }: HeaderProps) {
-  return (
-    <div className="p-2 w-full bg-gray-600 flex shadow shadow-gray-500">
-      {title && (
-        <h3 className="text-white font-semibold text-lg pl-2">{title}</h3>
-      )}
-      <button
-        onClick={() => {
-          onClickOutside();
-          document.body.style.overflow = "unset";
-        }}
-        className="text-white ml-auto mr-2 font-light"
-      >
-        <i className="fa-solid fa-x"></i>
-      </button>
     </div>
   );
 }

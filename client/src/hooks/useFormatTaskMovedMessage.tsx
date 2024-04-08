@@ -10,10 +10,10 @@ export const useFormatTaskMovedMessage = (activity: any) => {
   const { data: toList, isLoading: toListLoading } = useGetTaskListByIdQuery(
     activity.payload.toListId
   );
-  if (taskLoading || fromListLoading || toListLoading) return <></>
+  if (taskLoading || fromListLoading || toListLoading) return <></>;
   return ActivityMessageTemplates[activity.type](
     task.name,
     fromList?.name,
     toList.name
   );
-}
+};

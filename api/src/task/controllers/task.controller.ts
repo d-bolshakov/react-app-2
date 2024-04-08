@@ -13,6 +13,7 @@ import { CreateTaskDto } from '../dto/create-task.dto';
 import { UpdateTaskDto } from '../dto/update-task.dto';
 import { TaskActivityService } from '../services/task-activity.service';
 import { GetTasksQuery } from '../query/get-tasks.query';
+import { GetTaskActivityQuery } from '../query/get-task-activity.query';
 
 @Controller('tasks')
 export class TaskController {
@@ -32,8 +33,8 @@ export class TaskController {
   }
 
   @Get('/activity')
-  findAllActivity() {
-    return this.taskActivityService.findAll();
+  findAllActivity(@Query() getTaskActivityQuery: GetTaskActivityQuery) {
+    return this.taskActivityService.findAll(getTaskActivityQuery);
   }
 
   @Get(':id')

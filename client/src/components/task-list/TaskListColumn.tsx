@@ -2,7 +2,6 @@ import { ReactNode, useState } from "react";
 import { TaskList } from "../../data/TaskList";
 import { TaskCard } from "../task/TaskCard";
 import { Task } from "../../data/Task";
-import { ButtonDashed } from "../ui/ButtonDashed";
 import { Modal } from "../ui/Modal";
 import { AddTaskCardForm } from "../task/AddTaskCardForm";
 import {
@@ -11,6 +10,8 @@ import {
 } from "../../api/api";
 import { EditTaskListForm } from "./EditTaskListForm";
 import { Dropdown } from "../ui/Dropdown";
+import { Menu } from "../ui/Menu";
+import { Button, ButtonTypes } from "../ui/Button";
 
 export const TaskListColumn = ({ list }: { list: TaskList }) => {
   const [modalAddCard, setModalAddCard] = useState(false);
@@ -24,15 +25,30 @@ export const TaskListColumn = ({ list }: { list: TaskList }) => {
   const onClickDeleteTaskList = () => deleteTaskList(list.id);
   const onClickEditList = () => setModalEditList(true);
   const headerActions = [
-    <button onClick={onClickAddCard}>
-      <i className="fa-solid fa-plus"></i> Add new card
-    </button>,
-    <button onClick={onClickEditList}>
-      <i className="fa-regular fa-pen-to-square"></i> Edit
-    </button>,
-    <button onClick={onClickDeleteTaskList} className="text-red-500">
-      <i className="fa-regular fa-trash-can"></i> Delete
-    </button>,
+    {
+      title: (
+        <>
+          <i className="fa-solid fa-plus"></i> Add new card
+        </>
+      ),
+      handler: onClickAddCard,
+    },
+    {
+      title: (
+        <>
+          <i className="fa-regular fa-pen-to-square"></i> Edit
+        </>
+      ),
+      handler: onClickEditList,
+    },
+    {
+      title: (
+        <span className="text-red-500">
+          <i className=" fa-regular fa-trash-can"></i> Delete
+        </span>
+      ),
+      handler: onClickDeleteTaskList,
+    },
   ];
   return (
     <>
@@ -42,9 +58,13 @@ export const TaskListColumn = ({ list }: { list: TaskList }) => {
           tasksCount={tasks?.length || 0}
           actions={headerActions}
         />
-        <ButtonDashed onClick={onClickAddCard}>
+        <Button
+          type={ButtonTypes.DASHED}
+          onClick={onClickAddCard}
+          className="w-full py-3 mt-2"
+        >
           <i className="fa-solid fa-plus"></i> Add new card
-        </ButtonDashed>
+        </Button>
         {!isLoading && tasks?.length
           ? tasks.map((task: Task) => <TaskCard task={task} key={task.id} />)
           : null}
@@ -69,7 +89,7 @@ export const TaskListColumn = ({ list }: { list: TaskList }) => {
 };
 
 type HeaderProps = {
-  actions: ReactNode[];
+  actions: { title: string | ReactNode; handler: () => void }[];
   listName: string;
   tasksCount?: number | undefined;
 };
@@ -80,7 +100,13 @@ function Header({ actions, listName, tasksCount }: HeaderProps) {
       <h2 className="font-thin text-xl w-1/2">{listName}</h2>
       <div className="space-x-3 mr-0 ml-auto">
         <span className="font-thin text-xl">{tasksCount || 0}</span>
-        <Dropdown>{actions}</Dropdown>
+        <Dropdown>
+          <Menu>
+            {actions.map((action) => (
+              <Menu.Item onClick={action.handler}>{action.title}</Menu.Item>
+            ))}
+          </Menu>
+        </Dropdown>
       </div>
     </div>
   );

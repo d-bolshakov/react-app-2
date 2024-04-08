@@ -60,13 +60,28 @@ export const updateTaskSchema = joi.object({
 });
 
 export const addTaskListSchema = joi.object({
+  boardId: joi.number().required(),
+  name: joi.string().required().messages({
+    "string.empty": `"Name" cannot be an empty field`,
+    "any.required": `{{#label}} is a required field`,
+  }),
+});
+
+export const updateTaskListSchema = joi.object({
+  name: joi.string().messages({
+    "string.empty": `"Name" cannot be an empty field`,
+    "any.required": `"Name" is a required field`,
+  }),
+});
+
+export const createBoardSchema = joi.object({
   name: joi.string().required().messages({
     "string.empty": `"Name" cannot be an empty field`,
     "any.required": `"Name" is a required field`,
   }),
 });
 
-export const updateTaskListSchema = joi.object({
+export const updateBoardSchema = joi.object({
   name: joi.string().messages({
     "string.empty": `"Name" cannot be an empty field`,
     "any.required": `"Name" is a required field`,

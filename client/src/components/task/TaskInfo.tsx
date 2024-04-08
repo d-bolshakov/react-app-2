@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useGetTaskListsQuery, useUpdateTaskMutation } from "../../api/api";
 import { Task } from "../../data/Task";
-import { ButtonSecondary } from "../ui/ButtonSecondary";
 import { TaskList } from "../../data/TaskList";
 import { formatDateToWeekdayDateMonth } from "../../utils/DateFormat";
 import { PriorityTitleTemplates } from "../../templates/PriorityTemplates";
 import { TaskPriority } from "../../data/TaskPriority";
 import { updateTaskSchema, validator } from "../../utils/Validation";
 import { toast } from "react-toastify";
+import { Button, ButtonTypes } from "../ui/Button";
 
 export const TaskInfo = ({ task }: { task: Task }) => {
   const [editMode, setEditMode] = useState(false);
@@ -171,13 +171,17 @@ function EditButton({
   return (
     <div className={containerClassName}>
       {editMode ? (
-        <ButtonSecondary onClick={onClickInEditMode} className="p-3">
+        <Button
+          type={ButtonTypes.SECONDARY}
+          onClick={onClickInEditMode}
+          className="p-3"
+        >
           <i className="fa-solid fa-check"></i> Save
-        </ButtonSecondary>
+        </Button>
       ) : (
-        <ButtonSecondary onClick={onClickNotInEditMode}>
+        <Button type={ButtonTypes.SECONDARY} onClick={onClickNotInEditMode}>
           <i className="fa-regular fa-pen-to-square"></i> Edit
-        </ButtonSecondary>
+        </Button>
       )}
     </div>
   );

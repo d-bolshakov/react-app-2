@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Input } from "../ui/Input";
-import { ButtonPrimary } from "../ui/ButtonPrimary";
 import { useUpdateTaskListMutation } from "../../api/api";
 import { TaskList } from "../../data/TaskList";
 import { updateTaskListSchema, validator } from "../../utils/Validation";
 import { toast } from "react-toastify";
+import { Button, ButtonTypes } from "../ui/Button";
 
 export const EditTaskListForm = ({
   list,
@@ -23,7 +23,8 @@ export const EditTaskListForm = ({
       return;
     }
     updateTaskList({ id: list.id, data: formData })
-      .then(() => onSubmitted(formData))
+      .unwrap()
+      .then((data) => onSubmitted(data))
       .catch((error) => toast(error.message, { type: "error" }));
   };
   return (
@@ -38,7 +39,13 @@ export const EditTaskListForm = ({
         }
         title="Name"
       />
-      <ButtonPrimary onClick={onSubmit}>Save changes</ButtonPrimary>
+      <Button
+        type={ButtonTypes.PRIMARY}
+        onClick={onSubmit}
+        className="w-full mt-2"
+      >
+        Save changes
+      </Button>
     </div>
   );
 };

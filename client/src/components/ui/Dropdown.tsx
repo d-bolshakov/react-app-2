@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { getElementDirection } from "../../utils/ElementDirection";
 
-type Props = { children: React.ReactNode[] };
+type Props = { children: React.ReactNode };
 
 export const Dropdown = ({ children }: Props) => {
   const menuRef = useRef(null);
@@ -16,33 +16,29 @@ export const Dropdown = ({ children }: Props) => {
     }
   }, [menuVisibility]);
   return (
-    <div className="relative inline-block group">
-      <button
-        onMouseEnter={() => setMenuVisibility(true)}
-        onMouseLeave={() => setMenuVisibility(false)}
-        className="dropbtn text-md px-2 rounded-full group-hover:bg-gray-300"
-      >
+    <div
+      className="inline-block group group-hover:relative"
+      onMouseEnter={() => setMenuVisibility(true)}
+      onMouseLeave={() => setMenuVisibility(false)}
+    >
+      <button className="text-md px-2 rounded-full group-hover:bg-gray-300">
         <i className="fa-solid fa-ellipsis-vertical"></i>
       </button>
       <div
         ref={menuRef}
         className={`
-          ${!menuVisibility && "hidden"}  
-          ${direction === "left" && "right-0.5"} 
+          ${direction === "left" && "right-0.5"}
+          hidden
+          group-hover:block
           whitespace-nowrap 
-          w-fit 
-          group-hover:block absolute
+          group-hover:absolute
           group-hover:bg-white 
           border-gray-400 border-1 rounded-md
-          shadow shadow-gray-600   
-          z-10
+          shadow shadow-gray-600
+          overflow-hidden
         `}
       >
-        {children?.map((child) => (
-          <div className="hover:bg-gray-300 block py-2 px-2 cursor-pointer">
-            {child}
-          </div>
-        ))}
+        {children}
       </div>
     </div>
   );

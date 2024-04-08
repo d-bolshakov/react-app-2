@@ -1,35 +1,34 @@
 import { useState } from "react";
 import { Input } from "../ui/Input";
-import { useCreateTaskListMutation } from "../../api/api";
-import { addTaskListSchema, validator } from "../../utils/Validation";
+import { useCreateBoardMutation } from "../../api/api";
+import { createBoardSchema, validator } from "../../utils/Validation";
 import { toast } from "react-toastify";
+import { Board } from "../../data/Board";
 import { Button, ButtonTypes } from "../ui/Button";
 
-export const CreateTaskListForm = ({
-  boardId,
-  onSubmitted,
-}: {
-  boardId: number;
-  onSubmitted: () => void;
-}) => {
-  const [formData, setFormData] = useState({ boardId, name: "" });
-  const [createTaskList] = useCreateTaskListMutation();
+type Props = {
+  onSubmitted: (created: Board) => void;
+};
+
+export const CreateBoardForm = ({ onSubmitted }: Props) => {
+  const [formData, setFormData] = useState({
+    name: "",
+  });
+  const [createBoard] = useCreateBoardMutation();
   const onSubmit = () => {
-    const errors = validator(addTaskListSchema)(formData);
+    const errors = validator(createBoardSchema)(formData);
     if (errors?.length) {
       errors.forEach((error) => toast(error.message, { type: "error" }));
       return;
     }
-    createTaskList(formData)
+    createBoard(formData)
       .unwrap()
-      .then(() => onSubmitted)
+      .then((data) => onSubmitted(data))
       .catch((error) => toast(error.message, { type: "error" }));
   };
   return (
-    <div className="w-full p-2">
-      <h1 className="text-lg font-medium mb-2 text-center">
-        Add new task list
-      </h1>
+    <div className="p-2">
+      <h1 className="text-lg font-medium mb-2 text-center">Create new board</h1>
       <Input
         type="text"
         title="Name"
@@ -40,11 +39,11 @@ export const CreateTaskListForm = ({
         }}
       />
       <Button
-        onClick={onSubmit}
         type={ButtonTypes.PRIMARY}
-        className="mt-2 w-full"
+        onClick={onSubmit}
+        className="w-full mt-2"
       >
-        Add
+        Create
       </Button>
     </div>
   );

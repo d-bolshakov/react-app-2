@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskActivity } from '../entities/task-activity.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
+import { GetTaskActivityQuery } from '../query/get-task-activity.query';
 
 @Injectable()
 export class TaskActivityService {
@@ -10,8 +11,11 @@ export class TaskActivityService {
     private taskActivityRepository: Repository<TaskActivity>,
   ) {}
 
-  findAll() {
-    return this.taskActivityRepository.find();
+  findAll(query: GetTaskActivityQuery) {
+    const conditions: FindOptionsWhere<TaskActivity> = {};
+    if (query.boardId)
+      conditions.task = { list: { board: { id: query.boardId } } };
+    return this.taskActivityRepository.find({ where: conditions });
   }
 
   findByTask(taskId: number) {

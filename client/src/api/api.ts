@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { TaskList } from "../data/TaskList";
 import { Task } from "../data/Task";
 import { TaskActivity } from "../data/TaskActivity";
+import { Board } from "../data/Board";
 
 type moveTaskToListArgs = {
   taskId: number;
@@ -12,8 +13,72 @@ type moveTaskToListArgs = {
 export const taskApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL }),
-  tagTypes: ["Tasks", "Tasks/List", "Tasks/Activity", "TaskLists"],
+  tagTypes: [
+    "Boards",
+    "Boards/Activity",
+    "Tasks",
+    "Tasks/List",
+    "Tasks/Activity",
+    "TaskLists",
+    "TaskLists/Board",
+  ],
   endpoints: (builder) => ({
+    getBoards: builder.query<Board[], null>({
+      query: () => "/boards/",
+      providesTags: (result) =>
+        result
+          ? result.map((board) => ({
+              type: "Boards" as const,
+              id: board.id,
+            }))
+          : [],
+    }),
+    getBoardById: builder.query<Board, number>({
+      query: (id) => `/boards/${id}`,
+      providesTags: (result) =>
+        result ? [{ type: "Boards", id: result.id }] : [],
+    }),
+    createBoard: builder.mutation<Board, Omit<Board, "id">>({
+      query: (data) => ({
+        url: "/boards/",
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Boards"],
+    }),
+    updateBoard: builder.mutation<
+      Board,
+      { id: number; data: Partial<Omit<Board, "id">> }
+    >({
+      query: ({ id, data }) => ({
+        url: `/boards/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: (result) =>
+        result ? [{ type: "Boards", id: result.id }] : [],
+    }),
+    deleteBoard: builder.mutation<{ message: string }, number>({
+      query: (id) => ({ url: `/boards/${id}`, method: "DELETE" }),
+      invalidatesTags: (result, error, args) =>
+        result ? [{ type: "Boards", id: args }] : [],
+    }),
+    getTaskListsByBoardId: builder.query<TaskList[], number>({
+      query: (boardId: number) => ({
+        url: "/task-lists/",
+        params: { boardId },
+      }),
+      providesTags: (result, error, arg) =>
+        result
+          ? [
+              ...result.map((list) => ({
+                type: "TaskLists" as const,
+                id: list.id,
+              })),
+              { type: "TaskLists/Board", id: arg },
+            ]
+          : [],
+    }),
     getTaskLists: builder.query<TaskList[], null>({
       query: () => "/task-lists/",
       providesTags: ["TaskLists"],
@@ -21,13 +86,14 @@ export const taskApi = createApi({
     getTaskListById: builder.query<TaskList, number>({
       query: (id) => `/task-lists/${id}`,
     }),
-    createTaskList: builder.mutation<TaskList, { name: string }>({
-      query: ({ name }) => ({
+    createTaskList: builder.mutation<TaskList, Omit<TaskList, "id">>({
+      query: (body) => ({
         url: "/task-lists/",
         method: "POST",
-        body: { name },
+        body,
       }),
-      invalidatesTags: ["TaskLists"],
+      invalidatesTags: (result) =>
+        result ? [{ type: "TaskLists/Board", id: result.boardId }] : [],
     }),
     updateTaskList: builder.mutation<
       TaskList,
@@ -38,7 +104,8 @@ export const taskApi = createApi({
         method: "PATCH",
         body: data,
       }),
-      invalidatesTags: ["TaskLists"],
+      invalidatesTags: (result) =>
+        result ? [{ type: "TaskLists/Board", id: result.boardId }] : [],
     }),
     deleteTaskList: builder.mutation<{ message: string }, number>({
       query: (id) => ({
@@ -91,6 +158,20 @@ export const taskApi = createApi({
                 id: activity.taskId,
               })),
               { type: "Tasks/Activity", id: "LIST" },
+            ]
+          : [],
+    }),
+    getActivityByBoardId: builder.query<TaskActivity[], number>({
+      query: (id) => ({ url: "/tasks/activity", params: { boardId: id } }),
+      providesTags: (result, error, arg) =>
+        result
+          ? [
+              ...result.map((activity) => ({
+                type: "Tasks/Activity" as const,
+                id: activity.taskId,
+              })),
+              { type: "Tasks/Activity", id: "LIST" },
+              { type: "Boards/Activity", id: arg },
             ]
           : [],
     }),
@@ -162,6 +243,12 @@ export const taskApi = createApi({
 });
 
 export const {
+  useGetBoardsQuery,
+  useGetBoardByIdQuery,
+  useCreateBoardMutation,
+  useUpdateBoardMutation,
+  useDeleteBoardMutation,
+  useGetTaskListsByBoardIdQuery,
   useGetTaskListsQuery,
   useGetTaskListByIdQuery,
   useCreateTaskListMutation,
@@ -171,6 +258,7 @@ export const {
   useGetTasksByListIdQuery,
   useGetTaskByIdQuery,
   useGetActivityQuery,
+  useGetActivityByBoardIdQuery,
   useGetActivityByTaskIdQuery,
   useMoveTaskToListMutation,
   useAddNewTaskMutation,

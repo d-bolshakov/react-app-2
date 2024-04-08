@@ -7,12 +7,13 @@ import {
 import { TaskList } from "../../data/TaskList";
 import { Dropdown } from "../ui/Dropdown";
 import { Modal } from "../ui/Modal";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, ReactNode, useState } from "react";
 import { PriorityTitleTemplates } from "../../templates/PriorityTemplates";
 import { formatDateToWeekdayDateMonth } from "../../utils/DateFormat";
 import { TaskDetailsCard } from "./TaskDetailsCard";
 import { Select } from "../ui/Select";
 import { TaskPriority } from "../../data/TaskPriority";
+import { Menu } from "../ui/Menu";
 
 export const TaskCard = ({ task }: { task: Task }) => {
   const [modal, setModal] = useState(false);
@@ -36,13 +37,27 @@ export const TaskCard = ({ task }: { task: Task }) => {
   };
   const onClickDeleteTask = () => deleteTask(task.id);
   const onClickEditTask = () => setModal(true);
+  const headerActions = [
+    {
+      title: (
+        <>
+          <i className="fa-regular fa-pen-to-square"></i> Edit
+        </>
+      ),
+      handler: onClickEditTask,
+    },
+    {
+      title: (
+        <span className="text-red-500">
+          <i className="fa-regular fa-trash-can"></i> Delete
+        </span>
+      ),
+      handler: onClickDeleteTask,
+    },
+  ];
   return (
     <div className="border-1 rounded-md border-gray-400 my-2 mx-1 p-2 shadow-sm shadow-gray-500">
-      <Header
-        name={task.name}
-        onClickEditTask={onClickEditTask}
-        onClickDeleteTask={onClickDeleteTask}
-      />
+      <Header name={task.name} actions={headerActions} />
       <span className="block mt-1">{task.description}</span>
       <span className="block mt-1">
         <i className="fa-regular fa-calendar mr-1"></i>
@@ -64,22 +79,20 @@ export const TaskCard = ({ task }: { task: Task }) => {
 
 type HeaderProps = {
   name: string;
-  onClickEditTask: React.MouseEventHandler;
-  onClickDeleteTask: React.MouseEventHandler;
+  actions: { title: string | ReactNode; handler: () => void }[];
 };
 
-function Header({ name, onClickEditTask, onClickDeleteTask }: HeaderProps) {
+function Header({ name, actions }: HeaderProps) {
   return (
     <div className="flex">
       <h3 className="font-medium text-lg w-fit">{name}</h3>
       <div className="space-x-3 mr-0 ml-auto">
         <Dropdown>
-          <button onClick={onClickEditTask}>
-            <i className="fa-regular fa-pen-to-square"></i> Edit
-          </button>
-          <button onClick={onClickDeleteTask} className="text-red-500">
-            <i className="fa-regular fa-trash-can"></i> Delete
-          </button>
+          <Menu>
+            {actions.map((action) => (
+              <Menu.Item onClick={action.handler}>{action.title}</Menu.Item>
+            ))}
+          </Menu>
         </Dropdown>
       </div>
     </div>

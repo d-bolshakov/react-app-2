@@ -3,12 +3,12 @@ import { useAddNewTaskMutation } from "../../api/api";
 import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
 import { DatePicker } from "../ui/DatePicker";
-import { ButtonPrimary } from "../ui/ButtonPrimary";
 import { Task } from "../../data/Task";
 import { PriorityTitleTemplates } from "../../templates/PriorityTemplates";
 import { addTaskSchema, validator } from "../../utils/Validation";
 import { toast } from "react-toastify";
 import { TaskPriority } from "../../data/TaskPriority";
+import { Button, ButtonTypes } from "../ui/Button";
 
 export const AddTaskCardForm = ({
   listId,
@@ -35,7 +35,8 @@ export const AddTaskCardForm = ({
       return;
     }
     addNewTask(formData)
-      .then(() => onSubmitted(formData))
+      .unwrap()
+      .then((data) => onSubmitted(data))
       .catch((error) => toast(error.message, { type: "error" }));
   };
   return (
@@ -93,7 +94,13 @@ export const AddTaskCardForm = ({
         required={true}
         containerClassName="mt-2"
       />
-      <ButtonPrimary onClick={onSubmit}>Add</ButtonPrimary>
+      <Button
+        type={ButtonTypes.PRIMARY}
+        onClick={onSubmit}
+        className="w-full mt-2"
+      >
+        Add
+      </Button>
     </div>
   );
 };
