@@ -67,6 +67,6 @@ export class TaskListService {
         `Something went wrong during deleting task list with id ${id}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    return { message: `Task list with id ${id} was deleted successfuly` };
+    return { message: `Task list with id ${id} was deleted successfully` };
   }
 }

@@ -56,6 +56,6 @@ export class BoardService {
       throw new InternalServerErrorException(
         `Something went wrong during deleting board with id ${id}`,
       );
-    return { message: `Board with id ${id} was deleted successfuly` };
+    return { message: `Board with id ${id} was deleted successfully` };
   }
 }

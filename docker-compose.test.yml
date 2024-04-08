@@ -1,0 +1,44 @@
+version: '3'
+services:
+  db:
+    container_name: to-do-test-db
+    image: postgres:alpine
+    restart: always
+    expose:
+      - '5432'
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=tododbtest
+    volumes:
+      - ./volumes/postgres-test:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # api:
+  #   container_name: to-do-api
+  #   build: 
+  #     context: ./api
+  #     target: prod
+  #   ports:
+  #     - 3000:3000
+  #   restart: always
+  #   env_file:
+  #     - ./api/.env
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+
+  # frontend:
+  #   container_name: to-do-frontend
+  #   build: 
+  #     context: ./client
+  #     target: prod
+  #   ports:
+  #     - 5000:5000
+  #   restart: always
